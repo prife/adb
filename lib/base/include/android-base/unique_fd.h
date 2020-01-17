@@ -218,4 +218,4 @@ inline FILE* Fdopen(unique_fd&& ufd, const char* mode) {
 
 template <typename T>
 int close(const android::base::unique_fd_impl<T>&)
-    __attribute__((__unavailable__("close called on unique_fd")));
+    /*__attribute__((__unavailable__("close called on unique_fd")))*/;

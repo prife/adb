@@ -34,4 +34,4 @@ using unique_fd = android::base::unique_fd;
 
 template <typename T>
 int adb_close(const android::base::unique_fd_impl<T>&)
-        __attribute__((__unavailable__("adb_close called on unique_fd")));
+        /*__attribute__((__unavailable__("adb_close called on unique_fd"))) */;
