@@ -1,4 +1,4 @@
-# arm_adb
+# adb
 
 Android's adb standalone build with cmake, support x86/x64 and arm/arm64(aarch64)
 
@@ -53,6 +53,6 @@ $ make CFLAGS=-fPIC DEB_HOST_ARCH=amd64 -f debian/libssl.mk
 
 build with Clion please, so easy!
 
-**NOTE: not support windows/mac yet!"
+**NOTE: not support windows or mac build yet!**
 
 ## Troubleshooting
