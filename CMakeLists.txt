@@ -1,0 +1,8 @@
+cmake_minimum_required(VERSION 3.10)
+project(entry)
+
+add_subdirectory(${CMAKE_SOURCE_DIR}/lib/base)
+add_subdirectory(${CMAKE_SOURCE_DIR}/lib/libcrypto_utils)
+add_subdirectory(${CMAKE_SOURCE_DIR}/lib/libcutils)
+add_subdirectory(${CMAKE_SOURCE_DIR}/lib/liblog)
+add_subdirectory(src)
