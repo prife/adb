@@ -1,68 +1,58 @@
 # arm_adb
-Android's adb ported to ARM with automake source structures
 
-[![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=Q8BH5C48PA9SC)
+Android's adb standalone build with cmake, support x86/x64 and arm/arm64(aarch64)
+
+It's recommend to develop adb with clion which remote build is so useful!
 
 ## Prerequisites
-NOTE: Please make sure you are using navite/cross gcc/g++ >= 4.9
+
+### install toolchain
+
+Please prepare an linux environment.
+
+for arm/arm64, please install toolchain, for example you can download from 
+- https://developer.arm.com/tools-and-software/open-source-software/developer-tools/gnu-toolchain/gnu-a/downloads
+
+git clone this project.
+
 ```bash
-$ sudo apt-get install libtool automake
-```
-For cross-compiling:
-### ARM
-```bash
-$ sudo apt-get install linux-libc-dev-armhf-cross libc6-armhf-cross libc6-dev-armhf-cross
-```
-### AARCH64
-```bash
-$ sudo apt-get install linux-libc-dev-arm64-cross libc6-arm64-cross libc6-dev-arm64-cross
+$ cd <this-project>
+$ cd lib
+$ git clone https://salsa.debian.org/android-tools-team/android-platform-external-boringssl.git boringssl
 ```
 
-## How to build and run
-### Native compiling
-#### Native-compile openssl
+### build boringssl
+
+#### ARM64(AARCH64)
+
 ```bash
-$ git clone https://github.com/qhuyduong/openssl-1.0.2l.git
-$ cd openssl-1.0.2l/
-$ ./Configure --prefix=/tmp/openssl os/compiler:gcc
-$ make && make install
-$ cd -
+$ cd boringssl
+$ rm -rf debian/out
+$ make CFLAGS=-fPIC CC=aarch64-linux-gnu-gcc DEB_HOST_ARCH=arm64 -f debian/libcrypto.mk
+$ make CFLAGS=-fPIC CXX=aarch64-linux-gnu-g++ DEB_HOST_ARCH=arm64 -f debian/libssl.mk
 ```
 
-#### Native-compile arm_adb
+#### ARM
+
 ```bash
-$ git clone https://github.com/qhuyduong/arm_adb
-$ cd arm_adb
-$ ./configure --includedir=/tmp/openssl/include --libdir=/tmp/openssl/lib
-$ make
+$ cd boringssl
+$ make CFLAGS=-fPIC CC=arm-linux-gnu-gcc DEB_HOST_ARCH=armel -f debian/libcrypto.mk
+$ make CFLAGS=-fPIC CXX=arm-linux-gnu-g++ DEB_HOST_ARCH=armel -f debian/libssl.mk
 ```
 
-### Cross-compiling
-#### Cross-compile Openssl
+#### X64(AMD64)
+
 ```bash
-$ git clone https://github.com/qhuyduong/openssl-1.0.2l.git
-$ cd openssl-1.0.2l/
-$ ./Configure --prefix=/tmp/openssl os/compiler:$TOOLCHAIN_PREFIX-gcc
-$ make && make install
-$ cd -
+$ cd boringssl
+$ rm -rf debian/out
+$ make CFLAGS=-fPIC DEB_HOST_ARCH=amd64 -f debian/libcrypto.mk
+$ make CFLAGS=-fPIC DEB_HOST_ARCH=amd64 -f debian/libssl.mk
 ```
 
-#### Cross-compile arm_adb
-```bash
-$ git clone https://github.com/qhuyduong/arm_adb
-$ cd arm_adb
-$ ./configure --host=$TOOLCHAIN_PREFIX --includedir=/tmp/openssl/include --libdir=/tmp/openssl/lib
-$ make
-```
+## build adb
+
+build with Clion please, so easy!
+
+**NOTE: not support windows/mac yet!"
 
 ## Troubleshooting
-### 1. WARNING: 'aclocal-1.xx' is missing on your system
-Run below command before configure
-```bash
-$ autoreconf -i --force
-```
-
-## Donation
-If this project helps you reduce time to develop, you can give me a cup of coffee :)
-
-[![Paypal](https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=Q8BH5C48PA9SC)
