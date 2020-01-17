@@ -11,4 +11,6 @@ add_library(${PROJECT_NAME} STATIC
         stringprintf.cpp
         strings.cpp
         logging.cpp
-        parsenetaddress.cpp)
+        parsenetaddress.cpp
+        threads.cpp
+        test_utils.cpp)

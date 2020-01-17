@@ -1,18 +1,19 @@
 cmake_minimum_required(VERSION 3.10)
 project(my-adb)
 
-set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD 17)
 
 include_directories(
         ${CMAKE_CURRENT_SOURCE_DIR}
         ${CMAKE_SOURCE_DIR}/include
         ${CMAKE_SOURCE_DIR}/lib/base/include
+        ${CMAKE_SOURCE_DIR}/lib/libbuildversion/include
+        ${CMAKE_SOURCE_DIR}/lib/diagnose_usb/include
         ${CMAKE_SOURCE_DIR}/lib/libcrypto_utils/include
-        /data/workplace/wetest-adb/android-platform-external-boringssl/include
+        ${CMAKE_SOURCE_DIR}/lib/boringssl/include
 )
 
-# FIXME
-link_directories(/data/workplace/wetest-adb/android-platform-external-boringssl/debian/out)
+link_directories(${CMAKE_SOURCE_DIR}/lib/boringssl/debian/out)
 
 add_definitions(
         -DADB_HOST=1
@@ -35,22 +36,25 @@ add_definitions(
 
 add_executable(${PROJECT_NAME}
         adb.cpp
-        adb_auth_host.cpp
-        adb_client.cpp
         adb_io.cpp
         adb_listeners.cpp
         adb_trace.cpp
+        adb_unique_fd.cpp
         adb_utils.cpp
-        bugreport.cpp
+        client/bugreport.cpp
+        client/adb_client.cpp
+        client/auth.cpp
+        client/adb_install.cpp
         client/main.cpp
         client/usb_dispatch.cpp
         client/usb_linux.cpp
-        commandline.cpp
-        console.cpp
-        diagnose_usb.cpp
+        client/commandline.cpp
+        client/console.cpp
+        client/fastdeploy.cpp
+        client/fastdeploycallbacks.cpp
         fdevent.cpp
-        file_sync_client.cpp
-        line_printer.cpp
+        client/file_sync_client.cpp
+        client/line_printer.cpp
         shell_service_protocol.cpp
         services.cpp
         sockets.cpp
@@ -62,4 +66,4 @@ add_executable(${PROJECT_NAME}
         transport_local.cpp
         transport_usb.cpp)
 
-target_link_libraries(${PROJECT_NAME} libbase libcrypto_utils libcutils liblog crypto pthread rt)
+target_link_libraries(${PROJECT_NAME} libbase libbuildversion libcrypto_utils libcutils libdiagnose_usb liblog crypto pthread rt)
