@@ -11,6 +11,7 @@ include_directories(
         ${CMAKE_SOURCE_DIR}/lib/diagnose_usb/include
         ${CMAKE_SOURCE_DIR}/lib/libcrypto_utils/include
         ${CMAKE_SOURCE_DIR}/lib/boringssl/include
+        ${CMAKE_SOURCE_DIR}/lib/libcutils/include
 )
 
 link_directories(${CMAKE_SOURCE_DIR}/lib/boringssl/debian/out)

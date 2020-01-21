@@ -4,6 +4,7 @@ project(libcutils)
 set(CMAKE_C_STANDARD 99)
 
 include_directories(${CMAKE_SOURCE_DIR}/include)
+include_directories(${CMAKE_SOURCE_DIR}/lib/libcutils/include)
 
 add_definitions(
         -D_POSIX_C_SOURCE=200112L
