@@ -133,6 +133,8 @@ class ReconnectHandler {
     DISALLOW_COPY_AND_ASSIGN(ReconnectHandler);
 };
 
+constexpr const std::chrono::seconds ReconnectHandler::kDefaultTimeout;
+
 void ReconnectHandler::Start() {
     check_main_thread();
     handler_thread_ = std::thread(&ReconnectHandler::Run, this);
