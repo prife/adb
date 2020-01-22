@@ -27,7 +27,7 @@ add_definitions(
         -D_XOPEN_SOURCE
         -DHAVE_ANDROID_OS=1
         -D'ADB_VERSION="x.x-x"'
-        -DADB_HOST_ON_TARGET=1
+#       -DADB_HOST_ON_TARGET=1
         -DALLOW_ADBD_ROOT=1
         -DWORKAROUND_BUG6558362
         -DFAKE_LOG_DEVICE=1
