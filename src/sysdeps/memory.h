@@ -40,6 +40,9 @@ struct array_known_bounds<T[N]> {
 
 }  // namespace internal
 
+
+// [zhongkai: mingw 9.0.2 support c++14]
+#if !defined(__MINGW32__)
 namespace std {
 
 template <typename T, typename... Args>
@@ -61,5 +64,7 @@ typename std::enable_if<std::is_array<T>::value && internal::array_known_bounds<
 make_unique(Args&&... args) = delete;
 
 }  // namespace std
+
+#endif //zhongkai
 
 #endif

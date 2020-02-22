@@ -19,6 +19,10 @@
 #include <chrono>
 
 #if defined(_WIN32)
+
+// [zhongkai: mingw 9.0.2 support c++14]
+#if !defined(__MINGW32__)
+
 // We don't have C++14 on Windows yet.
 // Reimplement std::chrono_literals ourselves until we do.
 
@@ -41,6 +45,9 @@ constexpr std::chrono::milliseconds operator"" ms(unsigned long long ms) {
 constexpr std::chrono::duration<long double, std::milli> operator"" ms(long double ms) {
     return std::chrono::duration<long double, std::milli>(ms);
 }
+
+#endif //zhongkai
+
 #else
 using namespace std::chrono_literals;
 #endif

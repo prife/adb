@@ -46,6 +46,8 @@
 
 #include "sysdeps/uio.h"
 
+#define SIZEOF_MEMBER(t, f) sizeof((reinterpret_cast<t*>(4096))->f)
+
 extern void fatal(const char *fmt, ...);
 
 /* forward declarations */
@@ -2613,7 +2615,7 @@ static std::string ToLower(const std::string& anycase) {
     // copy string
     std::string str(anycase);
     // transform the copy
-    std::transform(str.begin(), str.end(), str.begin(), tolower);
+    std::transform(str.begin(), str.end(), str.begin(), ::tolower);
     return str;
 }
 

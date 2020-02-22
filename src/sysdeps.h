@@ -58,6 +58,10 @@
 #include <windows.h>
 #include <ws2tcpip.h>
 
+#if defined(X509_NAME)
+#undef X509_NAME
+#endif
+
 #include <memory>   // unique_ptr
 #include <string>
 
