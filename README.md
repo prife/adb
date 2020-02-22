@@ -1,12 +1,12 @@
 # adb
 
-Android's adb standalone build with cmake, support x86/x64 and arm/arm64(aarch64)
+Android's adb standalone build with cmake, support Linux(x86-64、arm64) and Windows(32bit)
 
 It's recommend to develop adb with clion which remote build is so useful!
 
-## Prerequisites
+## build adb target for Linux(X64、arm64)
 
-### install toolchain
+### step1: install toolchain
 
 Please prepare an linux environment.
 
@@ -21,9 +21,14 @@ $ cd lib
 $ git clone https://salsa.debian.org/android-tools-team/android-platform-external-boringssl.git boringssl
 ```
 
-### build boringssl
+### step2: build boringssl
 
-#### ARM64(AARCH64)
+Please choose a platform as following. 
+
+1. on intel pc with ubuntu Linux, please follow `X64(AMD64)`
+2. on Raspberry Pi or RK3399 or RK3328 with ubuntu Linux, please follow `ARM64(AARCH64)`
+
+**ARM64(AARCH64)**
 
 ```bash
 $ cd boringssl
@@ -32,15 +37,7 @@ $ make CFLAGS=-fPIC CC=aarch64-linux-gnu-gcc DEB_HOST_ARCH=arm64 -f debian/libcr
 $ make CFLAGS=-fPIC CXX=aarch64-linux-gnu-g++ DEB_HOST_ARCH=arm64 -f debian/libssl.mk
 ```
 
-#### ARM
-
-```bash
-$ cd boringssl
-$ make CFLAGS=-fPIC CC=arm-linux-gnu-gcc DEB_HOST_ARCH=armel -f debian/libcrypto.mk
-$ make CFLAGS=-fPIC CXX=arm-linux-gnu-g++ DEB_HOST_ARCH=armel -f debian/libssl.mk
-```
-
-#### X64(AMD64)
+**X86-64(AMD64)**
 
 ```bash
 $ cd boringssl
@@ -49,10 +46,70 @@ $ make CFLAGS=-fPIC DEB_HOST_ARCH=amd64 -f debian/libcrypto.mk
 $ make CFLAGS=-fPIC DEB_HOST_ARCH=amd64 -f debian/libssl.mk
 ```
 
-## build adb
+### build adb
 
-build with Clion please, so easy!
+**build on command line**
 
-**NOTE: not support windows or mac build yet!**
+```bash
+$ mkdir build && cd build
+$ cmake ..
+$ make -j8
+```
+
+**build with clion on windows**
+
+you need an remote linux pc, then config Clion with it's remote ssh feature, it is so easy!
+
+## build adb target for windows(only 32-bit supported!)
+
+1. install msys2
+
+config repo with https://mirror.tuna.tsinghua.edu.cn/help/msys2/
+
+```
+$ pacman -S mingw-w64-i686-gcc
+$ pacman -S mingw-w64-i686-cmake
+$ pacman -S make
+```
+
+2. download source
+
+```
+$ git clone git@git.code.oa.com:zhongkaizhu/n-adb.git
+$ cd lib
+$ git clone https://salsa.debian.org/android-tools-team/android-platform-external-boringssl.git boringssl
+$ cd ..
+```
+
+3. build boringssl
+
+It's not necessary to build boringssl, because I've already prebuilt on `prebuilt/windows/32/libcrypto.a`
+
+If you really want build by yourself. Please
+
+```
+$ cd lib
+$ cp ../prebuilt/windows/CMakeLists_boringssl.txt CMakeLists.txt
+$ mkdir build32 && cd build32
+$ cmake -G"Unix Makefiles" ..
+$ make -j8
+```
+
+If there is nothing wrong. the `libcrypto.a` will be built out.
+
+cp it to `n-adb/prebuilt/windows/32/`
+
+4. build adb
+
+switch to the n-adb source direcoty, and run following commands
+
+```
+$ mkdir build32
+$ cd build32
+$ cmake -G"Unix Makefiles" ..
+$ make -j8
+```
+
+**NOTE: not support mac build yet, but it is easy to support mac!**
 
 ## Troubleshooting
