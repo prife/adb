@@ -28,22 +28,22 @@ Please choose a platform as following.
 1. on intel pc with ubuntu Linux, please follow `X64(AMD64)`
 2. on Raspberry Pi or RK3399 or RK3328 with ubuntu Linux, please follow `ARM64(AARCH64)`
 
-**ARM64(AARCH64)**
-
-```bash
-$ cd boringssl
-$ rm -rf debian/out
-$ make CFLAGS=-fPIC CC=aarch64-linux-gnu-gcc DEB_HOST_ARCH=arm64 -f debian/libcrypto.mk
-$ make CFLAGS=-fPIC CXX=aarch64-linux-gnu-g++ DEB_HOST_ARCH=arm64 -f debian/libssl.mk
-```
-
 **X86-64(AMD64)**
 
 ```bash
 $ cd boringssl
 $ rm -rf debian/out
 $ make CFLAGS=-fPIC DEB_HOST_ARCH=amd64 -f debian/libcrypto.mk
-$ make CFLAGS=-fPIC DEB_HOST_ARCH=amd64 -f debian/libssl.mk
+$ make CXXFLAGS=-fPIC DEB_HOST_ARCH=amd64 -f debian/libssl.mk
+```
+
+**ARM64(AARCH64)**
+
+```bash
+$ cd boringssl
+$ rm -rf debian/out
+$ make CFLAGS=-fPIC CC=aarch64-linux-gnu-gcc DEB_HOST_ARCH=arm64 -f debian/libcrypto.mk
+$ make CXXFLAGS=-fPIC CXX=aarch64-linux-gnu-g++ DEB_HOST_ARCH=arm64 -f debian/libssl.mk
 ```
 
 ### build adb

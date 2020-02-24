@@ -1,5 +1,7 @@
 cmake_minimum_required(VERSION 3.5.1)
-project(entry)
+project(n-adb)
+
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 add_subdirectory(${CMAKE_SOURCE_DIR}/lib/base)
 add_subdirectory(${CMAKE_SOURCE_DIR}/lib/libcrypto_utils)
