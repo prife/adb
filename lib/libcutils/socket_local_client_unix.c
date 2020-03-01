@@ -39,6 +39,10 @@ int socket_local_client(const char *name, int namespaceId, int type)
 
 #include "socket_local_unix.h"
 
+#if defined(__APPLE__)
+#define AF_LOCAL AF_UNIX
+#endif
+
 #define UNUSED __attribute__((unused))
 
 #define LISTEN_BACKLOG 4

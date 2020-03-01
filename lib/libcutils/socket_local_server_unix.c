@@ -23,6 +23,10 @@
 #include <errno.h>
 #include <stddef.h>
 
+#if defined(__APPLE__)
+#define AF_LOCAL AF_UNIX
+#endif
+
 #if defined(_WIN32)
 
 int socket_local_server(const char *name, int namespaceId, int type)

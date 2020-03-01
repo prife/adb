@@ -18,6 +18,8 @@ if (WIN32)
 include_directories(${CMAKE_SOURCE_DIR}/lib/windows/usb/api)
 link_directories(${CMAKE_SOURCE_DIR}/lib/windows/prebuilt/usb/)
 link_directories(${CMAKE_SOURCE_DIR}/prebuilt/windows/32/)
+elseif(CMAKE_HOST_SYSTEM_NAME MATCHES "Darwin")
+link_directories(${CMAKE_SOURCE_DIR}/prebuilt/osx)
 else()
 link_directories(${CMAKE_SOURCE_DIR}/lib/boringssl/debian/out)
 endif()
@@ -82,14 +84,14 @@ set(adb_cmd_srcs
     shell_service_protocol.cpp
    )
 
-if (WIN32)
+if(CMAKE_HOST_SYSTEM_NAME MATCHES "Windows")
   set(SOURCES_BASE
       ${libadb_srcs}
       ${adb_cmd_srcs}
       ${libadb_host_src}
       ${windows_srcs}
     )
-elseif(UNIX)
+elseif(CMAKE_HOST_SYSTEM_NAME MATCHES "Linux")
   set(SOURCES_BASE
       ${libadb_srcs}
       ${adb_cmd_srcs}
@@ -97,7 +99,7 @@ elseif(UNIX)
       ${libadb_posix_srcs}
       ${linux_srcs}
     )
-elseif(APPLE)
+elseif(CMAKE_HOST_SYSTEM_NAME MATCHES "Darwin")
   set(SOURCES_BASE
       ${libadb_srcs}
       ${adb_cmd_srcs}
@@ -149,8 +151,12 @@ set(LINK_LIBS libbase libbuildversion libcrypto_utils libcutils libdiagnose_usb 
 if (WIN32)
 set(LINK_LIBS ${LINK_LIBS} ssl AdbWinApi AdbWinUsbApi ws2_32 gdi32 userenv)
 target_link_options(${PROJECT_NAME} PRIVATE -municode -static-libgcc -static-libstdc++)
-else()
+elseif(CMAKE_HOST_SYSTEM_NAME MATCHES "Linux")
 set(LINK_LIBS ${LINK_LIBS} rt)
+elseif(CMAKE_HOST_SYSTEM_NAME MATCHES "Darwin")
+FIND_LIBRARY(IOKit_LIBRARY IOKit)
+FIND_LIBRARY(Foundation_LIBRARY Foundation)
+set(LINK_LIBS ${LINK_LIBS} ${Foundation_LIBRARY} ${IOKit_LIBRARY})
 endif()
 
 target_link_libraries(${PROJECT_NAME} ${LINK_LIBS})
