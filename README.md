@@ -1,8 +1,8 @@
 # adb
 
-Android's adb standalone build with cmake, support Linux(x86-64、arm64) and Windows(32bit)
+Android's adb standalone build with cmake, support Linux(x86-64、arm64)], Windows(32bit) and macOS!
 
-It's recommend to develop adb with clion which remote build is so useful!
+It's recommend to develop adb with vscode which's remote build is so usefull!
 
 ## build adb target for Linux(X64、arm64)
 
@@ -88,8 +88,8 @@ It's not necessary to build boringssl, because I've already prebuilt on `prebuil
 If you really want build by yourself. Please
 
 ```
-$ cd lib
-$ cp ../prebuilt/windows/CMakeLists_boringssl.txt CMakeLists.txt
+$ cd lib/boringssl
+$ cp ../prebuilt/CMakeLists_boringssl.txt CMakeLists.txt
 $ mkdir build32 && cd build32
 $ cmake -G"Unix Makefiles" ..
 $ make -j8
@@ -110,6 +110,41 @@ $ cmake -G"Unix Makefiles" ..
 $ make -j8
 ```
 
-**NOTE: not support mac build yet, but it is easy to support mac!**
+## build adb target for macOS
+
+1. download source
+
+```
+$ git clone git@git.code.oa.com:zhongkaizhu/n-adb.git
+$ cd lib
+$ git clone https://salsa.debian.org/android-tools-team/android-platform-external-boringssl.git boringssl
+$ cd ..
+```
+
+2. build boringssl
+
+It's not necessary to build boringssl, because I've already prebuilt on `prebuilt/osx/libcrypto.a`
+
+If you really want build by yourself. Please
+
+```
+$ cd lib/boringssl
+$ cp ../prebuilt/CMakeLists_boringssl.txt CMakeLists.txt
+$ mkdir build32 && cd build32
+$ cmake ..
+$ make -j8
+```
+
+If there is nothing wrong. the `libcrypto.a` will be built out.
+
+cp it to `n-adb/prebuilt/osx/`
+
+3. build adb
+
+```bash
+$ mkdir build && cd build
+$ cmake ..
+$ make -j8
+```
 
 ## Troubleshooting
