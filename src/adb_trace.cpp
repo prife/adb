@@ -30,7 +30,7 @@
 #include <android-base/properties.h>
 #endif
 
-#if !ADB_HOST
+#if !ADB_HOST && !ADB_NON_ANDROID
 const char* adb_device_banner = "device";
 static android::base::LogdLogger gLogdLogger;
 #else
@@ -41,7 +41,7 @@ void AdbLogger(android::base::LogId id, android::base::LogSeverity severity,
                const char* tag, const char* file, unsigned int line,
                const char* message) {
     android::base::StderrLogger(id, severity, tag, file, line, message);
-#if !ADB_HOST
+#if !ADB_HOST && !ADB_NON_ANDROID
     // Only print logs of INFO or higher to logcat, so that `adb logcat` with adbd tracing on
     // doesn't result in exponential logging.
     if (severity >= android::base::INFO) {
@@ -51,7 +51,7 @@ void AdbLogger(android::base::LogId id, android::base::LogSeverity severity,
 }
 
 
-#if !ADB_HOST
+#if !ADB_HOST && !ADB_NON_ANDROID
 static std::string get_log_file_name() {
     struct tm now;
     time_t t;
@@ -93,7 +93,7 @@ std::string get_trace_setting_from_env() {
 }
 
 std::string get_trace_setting() {
-#if ADB_HOST
+#if ADB_HOST || ADB_NON_ANDROID
     return get_trace_setting_from_env();
 #else
     return android::base::GetProperty("persist.adb.trace_mask", "");
@@ -153,7 +153,7 @@ static void setup_trace_mask() {
 }
 
 void adb_trace_init(char** argv) {
-#if !ADB_HOST
+#if !ADB_HOST && !ADB_NON_ANDROID
     // Don't open log file if no tracing, since this will block
     // the crypto unmount of /data
     if (!get_trace_setting().empty()) {

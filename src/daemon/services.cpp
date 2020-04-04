@@ -38,10 +38,18 @@
 #include <android-base/stringprintf.h>
 #include <android-base/strings.h>
 #include <android-base/unique_fd.h>
+#if !ADB_NON_ANDROID
 #include <bootloader_message/bootloader_message.h>
+#endif
 #include <cutils/android_reboot.h>
 #include <cutils/sockets.h>
+#if !ADB_NON_ANDROID
 #include <log/log_properties.h>
+#else
+static int __android_log_is_debuggable() {
+    return 0;
+}
+#endif
 
 #include "adb.h"
 #include "adb_io.h"
@@ -205,14 +213,17 @@ unique_fd daemon_service_to_fd(const char* name, atransport* transport) {
         return unique_fd{unix_open(name + 4, O_RDWR | O_CLOEXEC)};
     } else if (!strncmp(name, "framebuffer:", 12)) {
         return create_service_thread("fb", framebuffer_service);
+#if !ADB_NON_ANDROID
     } else if (!strncmp(name, "jdwp:", 5)) {
         return create_jdwp_connection_fd(atoi(name + 5));
+#endif
     } else if (!strncmp(name, "shell", 5)) {
         return ShellService(name + 5, transport);
     } else if (!strncmp(name, "exec:", 5)) {
         return StartSubprocess(name + 5, nullptr, SubprocessType::kRaw, SubprocessProtocol::kNone);
     } else if (!strncmp(name, "sync:", 5)) {
         return create_service_thread("sync", file_sync_service);
+#if !ADB_NON_ANDROID
     } else if (!strncmp(name, "remount:", 8)) {
         std::string options(name + strlen("remount:"));
         return create_service_thread("remount",
@@ -225,6 +236,7 @@ unique_fd daemon_service_to_fd(const char* name, atransport* transport) {
         return create_service_thread("root", restart_root_service);
     } else if (!strncmp(name, "unroot:", 7)) {
         return create_service_thread("unroot", restart_unroot_service);
+#endif
     } else if (!strncmp(name, "backup:", 7)) {
         return StartSubprocess(
                 android::base::StringPrintf("/system/bin/bu backup %s", (name + 7)).c_str(),
@@ -243,12 +255,14 @@ unique_fd daemon_service_to_fd(const char* name, atransport* transport) {
         return create_service_thread("usb", restart_usb_service);
     } else if (!strncmp(name, "reverse:", 8)) {
         return reverse_service(name + 8, transport);
+#if !ADB_NON_ANDROID
     } else if (!strncmp(name, "disable-verity:", 15)) {
         return create_service_thread("verity-on", std::bind(set_verity_enabled_state_service,
                                                             std::placeholders::_1, false));
     } else if (!strncmp(name, "enable-verity:", 15)) {
         return create_service_thread("verity-off", std::bind(set_verity_enabled_state_service,
                                                              std::placeholders::_1, true));
+#endif
     } else if (!strcmp(name, "reconnect")) {
         return create_service_thread(
                 "reconnect", std::bind(reconnect_service, std::placeholders::_1, transport));

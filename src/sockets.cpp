@@ -32,7 +32,13 @@
 
 #if !ADB_HOST
 #include <android-base/properties.h>
+#if !ADB_NON_ANDROID
 #include <log/log_properties.h>
+#else
+static int __android_log_is_debuggable() {
+    return 0;
+}
+#endif
 #endif
 
 #include "adb.h"
@@ -347,7 +353,7 @@ asocket* create_local_socket(int fd) {
 }
 
 asocket* create_local_service_socket(const char* name, atransport* transport) {
-#if !ADB_HOST
+#if !ADB_HOST && !ADB_NON_ANDROID
     if (!strcmp(name, "jdwp")) {
         return create_jdwp_service_socket();
     }

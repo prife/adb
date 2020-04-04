@@ -29,5 +29,6 @@ add_library(${PROJECT_NAME} STATIC
         socket_network_client_unix.c
         load_file.c
         threads.c
+#        sockets_unix.cpp
         sockets.cpp)
 endif()

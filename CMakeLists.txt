@@ -1,4 +1,8 @@
 cmake_minimum_required(VERSION 3.5.1)
+
+set(CMAKE_C_COMPILER /usr/bin/clang)
+set(CMAKE_CXX_COMPILER /usr/bin/clang++)
+
 project(n-adb)
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)

@@ -165,3 +165,61 @@ endif()
 
 target_link_libraries(${PROJECT_NAME} ${LINK_LIBS})
 
+# for adbd
+
+set(libadbd_core
+    ${libadb_srcs}
+    ${libadb_posix_srcs}
+    daemon/auth.cpp
+    #daemon/jdwp_service.cpp
+    daemon/usb.cpp
+)
+
+set(libadbd_services
+    daemon/file_sync_service.cpp
+    daemon/framebuffer_service.cpp
+    #daemon/mdns.cpp
+    #daemon/remount_service.cpp
+    daemon/services.cpp
+    #daemon/set_verity_enable_state_service.cpp
+    daemon/shell_service.cpp
+    shell_service_protocol.cpp
+)
+
+add_executable(adbd
+    daemon/main.cpp
+    ${libadbd_core}
+    ${libadbd_services}
+    ../lib/libasyncio/AsyncIO.cpp
+    ../lib/base/properties.cpp
+    ../lib/libcutils/android_get_control_file.cpp
+)
+
+target_compile_definitions(adbd
+    PRIVATE _GNU_SOURCE
+    PRIVATE ADB_VERSION="x.x-x"
+#    PRIVATE ALLOW_ADBD_ROOT=1
+    PRIVATE WORKAROUND_BUG6558362
+    PRIVATE FAKE_LOG_DEVICE=1
+    PRIVATE DONT_USE_LIBUSB
+    PRIVATE DONT_USE_MDNS
+    PRIVATE ADB_NON_ANDROID=1
+    PRIVATE ADB_HOST=0
+    PRIVATE ALLOW_ADBD_NO_AUTH=1
+)
+
+target_include_directories(adbd
+    PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}
+    PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/daemon/include
+    PRIVATE ${CMAKE_SOURCE_DIR}/include
+    PRIVATE ${CMAKE_SOURCE_DIR}/lib/base/include
+    PRIVATE ${CMAKE_SOURCE_DIR}/lib/libbuildversion/include
+    PRIVATE ${CMAKE_SOURCE_DIR}/lib/diagnose_usb/include
+    PRIVATE ${CMAKE_SOURCE_DIR}/lib/libcrypto_utils/include
+    PRIVATE ${CMAKE_SOURCE_DIR}/lib/boringssl/src/include
+    PRIVATE ${CMAKE_SOURCE_DIR}/lib/libcutils/include
+    PRIVATE ${CMAKE_SOURCE_DIR}/lib/libcutils/include
+    PRIVATE ${CMAKE_SOURCE_DIR}/lib/libasyncio/include
+)
+
+target_link_libraries(adbd ${LINK_LIBS} resolv util)

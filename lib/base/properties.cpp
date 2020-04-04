@@ -18,8 +18,10 @@
 
 #include "android-base/properties.h"
 
+#if !ADB_NON_ANDROID
 #include <sys/system_properties.h>
 #include <sys/_system_properties.h>
+#endif
 
 #include <algorithm>
 #include <chrono>
@@ -33,6 +35,7 @@ namespace android {
 namespace base {
 
 std::string GetProperty(const std::string& key, const std::string& default_value) {
+#if !ADB_NON_ANDROID
   const prop_info* pi = __system_property_find(key.c_str());
   if (pi == nullptr) return default_value;
 
@@ -42,6 +45,7 @@ std::string GetProperty(const std::string& key, const std::string& default_value
   // If the property exists but is empty, also return the default value.
   // Since we can't remove system properties, "empty" is traditionally
   // the same as "missing" (this was true for cutils' property_get).
+#endif
   return default_value;
 }
 
@@ -82,7 +86,11 @@ template uint32_t GetUintProperty(const std::string&, uint32_t, uint32_t);
 template uint64_t GetUintProperty(const std::string&, uint64_t, uint64_t);
 
 bool SetProperty(const std::string& key, const std::string& value) {
+#if !ADB_NON_ANDROID
   return (__system_property_set(key.c_str(), value.c_str()) == 0);
+#else
+  return true;
+#endif
 }
 
 struct WaitForPropertyData {
@@ -123,6 +131,7 @@ static void UpdateTimeSpec(timespec& ts, std::chrono::milliseconds relative_time
   }
 }
 
+#if !ADB_NON_ANDROID
 // Waits for the system property `key` to be created.
 // Times out after `relative_timeout`.
 // Sets absolute_timeout which represents absolute time for the timeout.
@@ -170,6 +179,7 @@ bool WaitForPropertyCreation(const std::string& key,
   auto start_time = std::chrono::steady_clock::now();
   return (WaitForPropertyCreation(key, relative_timeout, start_time) != nullptr);
 }
+#endif
 
 }  // namespace base
 }  // namespace android

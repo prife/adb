@@ -190,19 +190,19 @@ static struct ss_func_desc ss_descriptors = {
 
 struct usb_ext_compat_desc os_desc_compat = {
     .bFirstInterfaceNumber = 0,
-    .Reserved1 = cpu_to_le32(1),
+    .Reserved1 = (__u8) cpu_to_le32(1),
     .CompatibleID = {0},
     .SubCompatibleID = {0},
     .Reserved2 = {0},
 };
 
 static struct usb_os_desc_header os_desc_header = {
-    .interface = cpu_to_le32(1),
+    .interface = (__u8) cpu_to_le32(1),
     .dwLength = cpu_to_le32(sizeof(os_desc_header) + sizeof(os_desc_compat)),
-    .bcdVersion = cpu_to_le32(1),
-    .wIndex = cpu_to_le32(4),
-    .bCount = cpu_to_le32(1),
-    .Reserved = cpu_to_le32(0),
+    .bcdVersion =  (__u8) cpu_to_le32(1),
+    .wIndex = (__u8) cpu_to_le32(4),
+    .bCount = (__u8) cpu_to_le32(1),
+    .Reserved = (__u8) cpu_to_le32(0),
 };
 
 #define STR_INTERFACE_ "ADB Interface"

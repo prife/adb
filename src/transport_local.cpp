@@ -245,6 +245,8 @@ static void client_socket_thread(int) {
 
 #else // ADB_HOST
 
+#if ADB_NON_ANDROID
+
 static void server_socket_thread(int port) {
     unique_fd serverfd;
 
@@ -275,6 +277,16 @@ static void server_socket_thread(int port) {
     }
     D("transport: server_socket_thread() exiting");
 }
+
+static void qemu_socket_thread(int port) {
+    return;
+}
+
+static bool use_qemu_goldfish() {
+    return false;
+}
+
+#else // ADB_NON_ANDROID
 
 /* This is relevant only for ADB daemon running inside the emulator. */
 /*
@@ -402,6 +414,8 @@ static bool use_qemu_goldfish() {
     }
     return false;
 }
+
+#endif  // !ADB_NON_ANDROID
 
 #endif  // !ADB_HOST
 

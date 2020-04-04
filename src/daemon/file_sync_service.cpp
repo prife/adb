@@ -37,7 +37,9 @@
 #include <android-base/strings.h>
 #include <private/android_filesystem_config.h>
 #include <private/android_logger.h>
+#if !ADB_NON_ANDROID
 #include <selinux/android.h>
+#endif
 
 #include "adb.h"
 #include "adb_io.h"
@@ -49,10 +51,12 @@
 
 using android::base::StringPrintf;
 
+#if !ADB_NON_ANDROID
 static bool should_use_fs_config(const std::string& path) {
     // TODO: use fs_config to configure permissions on /data too.
     return !android::base::StartsWith(path, "/data/");
 }
+#endif
 
 static bool update_capabilities(const char* path, uint64_t capabilities) {
     if (capabilities == 0) {
@@ -89,10 +93,11 @@ static bool secure_mkdirs(const std::string& path) {
             partial_path += OS_PATH_SEPARATOR;
         }
         partial_path += path_component;
-
+#if !ADB_NON_ANDROID
         if (should_use_fs_config(partial_path)) {
             fs_config(partial_path.c_str(), 1, nullptr, &uid, &gid, &mode, &capabilities);
         }
+#endif
         if (adb_mkdir(partial_path.c_str(), mode) == -1) {
             if (errno != EEXIST) {
                 return false;
@@ -100,8 +105,10 @@ static bool secure_mkdirs(const std::string& path) {
         } else {
             if (chown(partial_path.c_str(), uid, gid) == -1) return false;
 
+#if !ADB_NON_ANDROID
             // Not all filesystems support setting SELinux labels. http://b/23530370.
             selinux_android_restorecon(partial_path.c_str(), 0);
+#endif
 
             if (!update_capabilities(partial_path.c_str(), capabilities)) return false;
         }
@@ -237,8 +244,10 @@ static bool handle_send_file(int s, const char* path, uid_t uid, gid_t gid, uint
             goto fail;
         }
 
+#if !ADB_NON_ANDROID
         // Not all filesystems support setting SELinux labels. http://b/23530370.
         selinux_android_restorecon(path, 0);
+#endif
 
         // fchown clears the setuid bit - restore it if present.
         // Ignore the result of calling fchmod. It's not supported
@@ -408,11 +417,13 @@ static bool do_send(int s, const std::string& spec, std::vector<char>& buffer) {
     uid_t uid = -1;
     gid_t gid = -1;
     uint64_t capabilities = 0;
+#if !ADB_NON_ANDROID
     if (should_use_fs_config(path)) {
         unsigned int broken_api_hack = mode;
         fs_config(path.c_str(), 0, nullptr, &uid, &gid, &broken_api_hack, &capabilities);
         mode = broken_api_hack;
     }
+#endif
     return handle_send_file(s, path.c_str(), uid, gid, capabilities, mode, buffer, do_unlink);
 }
 

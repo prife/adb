@@ -179,8 +179,56 @@ static void adbd_auth_listener(int fd, unsigned events, void* data) {
     }
 }
 
+#if ADB_NON_ANDROID
+/** from AOSP: system/core/init/util.cpp
+ *  CreateSocket
+ */
+#include <fcntl.h>
+#include <sys/un.h>
+#include <sys/socket.h>
+#include <sys/stat.h>
+#include <sys/types.h>
+#include <unistd.h>
+static int adbd_socket = -1;
+static int get_control_socket(const char* name) {
+    if (adbd_socket > 0) {
+        return adbd_socket;
+    }
+
+    android::base::unique_fd fd(socket(PF_UNIX, SOCK_SEQPACKET, 0));
+    if (fd < 0) {
+        PLOG(ERROR) << "Failed to open socket '" << name << "'";
+        return -1;
+    }
+
+    struct sockaddr_un addr;
+    memset(&addr, 0 , sizeof(addr));
+    addr.sun_family = AF_UNIX;
+    snprintf(addr.sun_path, sizeof(addr.sun_path), ANDROID_SOCKET_ENV_PREFIX "%s", name);
+    if ((adb_unlink(addr.sun_path) != 0) && (errno != ENOENT)) {
+        PLOG(ERROR) << "Failed to unlink old socket '" << addr.sun_path << "'";
+    }
+
+    int ret = ::bind(fd, (struct sockaddr *) &addr, sizeof(struct sockaddr_un));
+    if (ret) {
+        PLOG(ERROR) << "Failed to bind socket '" << name << "'";
+        goto out_unlink;
+    }
+
+    return fd.release();
+
+out_unlink:
+    adb_unlink(addr.sun_path);
+    return -1;
+}
+#endif
+
 void adbd_cloexec_auth_socket() {
+#if !ADB_NON_ANDROID
     int fd = android_get_control_socket("adbd");
+#else
+    int fd = get_control_socket("adbd");
+#endif
     if (fd == -1) {
         PLOG(ERROR) << "Failed to get adbd socket";
         return;
@@ -189,7 +237,11 @@ void adbd_cloexec_auth_socket() {
 }
 
 void adbd_auth_init(void) {
+#if !ADB_NON_ANDROID
     int fd = android_get_control_socket("adbd");
+#else
+    int fd = get_control_socket("adbd");
+#endif
     if (fd == -1) {
         PLOG(ERROR) << "Failed to get adbd socket";
         return;

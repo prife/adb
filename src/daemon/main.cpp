@@ -17,15 +17,18 @@
 #define TRACE_TAG ADB
 
 #include "sysdeps.h"
-
+#ifndef ADB_NON_ANDROID
 #include <android/fdsan.h>
+#endif
 #include <errno.h>
 #include <getopt.h>
 #include <malloc.h>
 #include <signal.h>
 #include <stdio.h>
 #include <stdlib.h>
+#ifndef ADB_NON_ANDROID
 #include <sys/capability.h>
+#endif
 #include <sys/prctl.h>
 
 #include <memory>
@@ -34,12 +37,15 @@
 #include <android-base/macros.h>
 #include <android-base/properties.h>
 #include <android-base/stringprintf.h>
+#ifndef ADB_NON_ANDROID
 #include <libminijail.h>
 #include <log/log_properties.h>
+
 #include <scoped_minijail.h>
 
 #include <private/android_filesystem_config.h>
 #include "selinux/android.h"
+#endif
 
 #include "adb.h"
 #include "adb_auth.h"
@@ -51,6 +57,7 @@
 
 static const char* root_seclabel = nullptr;
 
+#ifndef ADB_NON_ANDROID
 static bool should_drop_capabilities_bounding_set() {
 #if defined(ALLOW_ADBD_ROOT)
     if (__android_log_is_debuggable()) {
@@ -167,10 +174,13 @@ static void drop_privileges(int server_port) {
         }
     }
 }
+#endif
 
 static void setup_port(int port) {
     local_init(port);
+#ifndef ADB_NON_ANDROID
     setup_mdns(port);
+#endif
 }
 
 int adbd_main(int server_port) {
@@ -178,10 +188,12 @@ int adbd_main(int server_port) {
 
     signal(SIGPIPE, SIG_IGN);
 
+#ifndef ADB_NON_ANDROID
     auto fdsan_level = android_fdsan_get_error_level();
     if (fdsan_level == ANDROID_FDSAN_ERROR_LEVEL_DISABLED) {
         android_fdsan_set_error_level(ANDROID_FDSAN_ERROR_LEVEL_WARN_ONCE);
     }
+#endif
 
     init_transport_registration();
 
@@ -206,7 +218,9 @@ int adbd_main(int server_port) {
           " unchanged.\n");
     }
 
+#ifndef ADB_NON_ANDROID
     drop_privileges(server_port);
+#endif
 
     bool is_usb = false;
     if (access(USB_FFS_ADB_EP0, F_OK) == 0) {
@@ -233,9 +247,11 @@ int adbd_main(int server_port) {
         setup_port(DEFAULT_ADB_LOCAL_TRANSPORT_PORT);
     }
 
+#ifndef ADB_NON_ANDROID
     D("adbd_main(): pre init_jdwp()");
     init_jdwp();
     D("adbd_main(): post init_jdwp()");
+#endif
 
     D("Event loop starting");
     fdevent_loop();
@@ -245,7 +261,9 @@ int adbd_main(int server_port) {
 
 int main(int argc, char** argv) {
     // Set M_DECAY_TIME so that our allocations aren't immediately purged on free.
+#ifndef ADB_NON_ANDROID
     mallopt(M_DECAY_TIME, 1);
+#endif
 
     while (true) {
         static struct option opts[] = {

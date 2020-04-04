@@ -19,8 +19,10 @@
 
 #include <sys/cdefs.h>
 
+#if !ADB_NON_ANDROID
 #if !defined(__BIONIC__)
 #error Only bionic supports system properties.
+#endif
 #endif
 
 #include <chrono>
