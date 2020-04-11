@@ -225,11 +225,66 @@ set(libcrypto_sources
         src/crypto/x509v3/v3_utl.c
 )
 
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -DBORINGSSL_ANDROID_SYSTEM -DOPENSSL_NO_ASM")
+set(linux_aarch64_sources
+        linux-aarch64/crypto/chacha/chacha-armv8.S
+        linux-aarch64/crypto/fipsmodule/aesv8-armx64.S
+        linux-aarch64/crypto/fipsmodule/armv8-mont.S
+        linux-aarch64/crypto/fipsmodule/ghashv8-armx64.S
+        linux-aarch64/crypto/fipsmodule/sha1-armv8.S
+        linux-aarch64/crypto/fipsmodule/sha256-armv8.S
+        linux-aarch64/crypto/fipsmodule/sha512-armv8.S
+)
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fvisibility=hidden -DBORINGSSL_SHARED_LIBRARY -DBORINGSSL_IMPLEMENTATION -DOPENSSL_SMALL -D_XOPEN_SOURCE=700 -Wno-unused-parameter")
+set (linux_x86_64_sources 
+        linux-x86_64/crypto/chacha/chacha-x86_64.S
+        linux-x86_64/crypto/cipher_extra/aes128gcmsiv-x86_64.S
+        linux-x86_64/crypto/cipher_extra/chacha20_poly1305_x86_64.S
+        linux-x86_64/crypto/fipsmodule/aes-x86_64.S
+        linux-x86_64/crypto/fipsmodule/aesni-gcm-x86_64.S
+        linux-x86_64/crypto/fipsmodule/aesni-x86_64.S
+        linux-x86_64/crypto/fipsmodule/bsaes-x86_64.S
+        linux-x86_64/crypto/fipsmodule/ghash-x86_64.S
+        linux-x86_64/crypto/fipsmodule/md5-x86_64.S
+        linux-x86_64/crypto/fipsmodule/p256-x86_64-asm.S
+        linux-x86_64/crypto/fipsmodule/rdrand-x86_64.S
+        linux-x86_64/crypto/fipsmodule/rsaz-avx2.S
+        linux-x86_64/crypto/fipsmodule/sha1-x86_64.S
+        linux-x86_64/crypto/fipsmodule/sha256-x86_64.S
+        linux-x86_64/crypto/fipsmodule/sha512-x86_64.S
+        linux-x86_64/crypto/fipsmodule/vpaes-x86_64.S
+        linux-x86_64/crypto/fipsmodule/x86_64-mont.S
+        linux-x86_64/crypto/fipsmodule/x86_64-mont5.S
+        src/crypto/curve25519/asm/x25519-asm-x86_64.S
+)
+
+if(CMAKE_HOST_SYSTEM_NAME MATCHES "Windows")
+  set (sources ${libcrypto_sources})
+elseif(CMAKE_HOST_SYSTEM_NAME MATCHES "Darwin")
+  set (sources ${libcrypto_sources})
+elseif (CMAKE_HOST_SYSTEM_NAME MATCHES "Linux")
+  if(${CMAKE_SYSTEM_PROCESSOR} MATCHES "aarch64")
+    set (sources ${libcrypto_sources} ${linux_aarch64_sources})
+  else()
+    message("build with linux x86-64")
+    set (sources ${libcrypto_sources} ${linux_x86_64_sources})
+  endif()
+endif()
+
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} \
+        -DBORINGSSL_ANDROID_SYSTEM \
+        -DOPENSSL_NO_ASM \
+        -DBORINGSSL_SHARED_LIBRARY \
+        -DBORINGSSL_IMPLEMENTATION \
+        -DOPENSSL_SMALL \
+        -D_XOPEN_SOURCE=700 \
+        -fvisibility=hidden \
+        -Wno-unused-parameter \
+        -Wa,--noexecstack")
+
+#set(CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS})
 
 include_directories(${CMAKE_SOURCE_DIR}/src/crypto)
 include_directories(${CMAKE_SOURCE_DIR}/src/include)
 
-add_library(${PROJECT_NAME} STATIC ${libcrypto_sources})
+add_library(${PROJECT_NAME} STATIC ${sources})
+
