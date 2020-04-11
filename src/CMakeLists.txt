@@ -166,7 +166,7 @@ endif()
 target_link_libraries(${PROJECT_NAME} ${LINK_LIBS})
 
 # for adbd
-
+if(CMAKE_HOST_SYSTEM_NAME MATCHES "Linux")
 set(libadbd_core
     ${libadb_srcs}
     ${libadb_posix_srcs}
@@ -223,3 +223,5 @@ target_include_directories(adbd
 )
 
 target_link_libraries(adbd ${LINK_LIBS} resolv util)
+
+endif() # for linux
