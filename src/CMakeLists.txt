@@ -95,8 +95,12 @@ if (WIN32)
     link_directories(${CMAKE_SOURCE_DIR}/prebuilt/windows/32/)
 elseif(CMAKE_HOST_SYSTEM_NAME MATCHES "Darwin")
     link_directories(${CMAKE_SOURCE_DIR}/prebuilt/osx)
-else()
-    link_directories(${CMAKE_SOURCE_DIR}/lib/boringssl/debian/out)
+elseif(CMAKE_HOST_SYSTEM_NAME MATCHES "Linux")
+  if(${CMAKE_SYSTEM_PROCESSOR} MATCHES "aarch64")
+    link_directories(${CMAKE_SOURCE_DIR}/prebuilt/linux/aarch64)
+  else()
+    link_directories(${CMAKE_SOURCE_DIR}/prebuilt/linux/x86-64)
+  endif()
 endif()
 
 add_executable(${PROJECT_NAME} ${SOURCES_BASE})
@@ -166,7 +170,9 @@ endif()
 target_link_libraries(${PROJECT_NAME} ${LINK_LIBS})
 
 # for adbd
+if(CMAKE_HOST_SYSTEM_NAME MATCHES "Linux")
 
+if(${CMAKE_SYSTEM_PROCESSOR} MATCHES "x86_64") # no support aarch64
 set(libadbd_core
     ${libadb_srcs}
     ${libadb_posix_srcs}
@@ -223,3 +229,7 @@ target_include_directories(adbd
 )
 
 target_link_libraries(adbd ${LINK_LIBS} resolv util)
+
+endif() # for x86-64
+
+endif() # for linux

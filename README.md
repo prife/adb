@@ -2,7 +2,7 @@
 
 Android's adb standalone build with cmake, support Linux(x86-64、arm64)], Windows(32bit) and macOS!
 
-It's recommend to develop adb with vscode which's remote development is so usefull!
+It's recommend to develop adb with clion/vscode which's remote development is so usefull!
 
 ## build adb target for Linux(X64、arm64)
 
@@ -46,7 +46,7 @@ $ make CFLAGS=-fPIC CC=aarch64-linux-gnu-gcc DEB_HOST_ARCH=arm64 -f debian/libcr
 $ make CXXFLAGS=-fPIC CXX=aarch64-linux-gnu-g++ DEB_HOST_ARCH=arm64 -f debian/libssl.mk
 ```
 
-### build adb
+### build adb for linxu x86-64
 
 **build on command line**
 
@@ -56,9 +56,17 @@ $ cmake ..
 $ make -j8
 ```
 
-**build with vscode on windows**
+**build with clion/vscode on windows**
 
-you need an remote linux pc, then config vscode with it's remote development feature, it is so easy!
+you need an remote linux pc, then config clion/vscode with it's remote development feature, it is so easy!
+
+## build adb target for linux aarch64
+
+```bash
+$ mkdir build && cd build
+$ cmake -DCMAKE_TOOLCHAIN_FILE=../aarch64_linux_toolchain.cmake ../
+$ make -j8
+```
 
 ## build adb target for windows(only 32-bit supported!)
 
