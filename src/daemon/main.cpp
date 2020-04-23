@@ -28,7 +28,9 @@
 #include <signal.h>
 #include <stdio.h>
 #include <stdlib.h>
+#if !ADB_NON_ANDROID
 #include <sys/capability.h>
+#endif
 #include <sys/prctl.h>
 
 #include <memory>
@@ -299,9 +301,11 @@ int adbd_main(int server_port) {
         setup_adb(addrs);
     }
 
+#if !ADB_NON_ANDROID
     D("adbd_main(): pre init_jdwp()");
     init_jdwp();
     D("adbd_main(): post init_jdwp()");
+#endif
 
     D("Event loop starting");
     fdevent_loop();

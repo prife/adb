@@ -110,9 +110,11 @@ static bool secure_mkdirs(const std::string& path) {
         }
         partial_path += path_component;
 
+#if !ADB_NON_ANDROID
         if (should_use_fs_config(partial_path)) {
             fs_config(partial_path.c_str(), 1, nullptr, &uid, &gid, &mode, &capabilities);
         }
+#endif
         if (adb_mkdir(partial_path.c_str(), mode) == -1) {
             if (errno != EEXIST) {
                 return false;
@@ -467,12 +469,13 @@ static bool do_send(int s, const std::string& spec, std::vector<char>& buffer) {
         uid_t uid = -1;
         gid_t gid = -1;
         uint64_t capabilities = 0;
+#if !ADB_NON_ANDROID
         if (should_use_fs_config(path)) {
             unsigned int broken_api_hack = mode;
             fs_config(path.c_str(), 0, nullptr, &uid, &gid, &broken_api_hack, &capabilities);
             mode = broken_api_hack;
         }
-
+#endif
         result = handle_send_file(s, path.c_str(), &timestamp, uid, gid, capabilities, mode, buffer,
                                   do_unlink);
     }
@@ -550,7 +553,9 @@ static const char* sync_id_to_name(uint32_t id) {
 static bool handle_sync_command(int fd, std::vector<char>& buffer) {
     D("sync: waiting for request");
 
+#if !ADB_NON_ANDROID
     ATRACE_CALL();
+#endif
     SyncRequest request;
     if (!ReadFdExactly(fd, &request, sizeof(request))) {
         SendSyncFail(fd, "command read failure");
@@ -570,7 +575,9 @@ static bool handle_sync_command(int fd, std::vector<char>& buffer) {
 
     std::string id_name = sync_id_to_name(request.id);
     std::string trace_name = StringPrintf("%s(%s)", id_name.c_str(), name);
+#if !ADB_NON_ANDROID
     ATRACE_NAME(trace_name.c_str());
+#endif
 
     D("sync: %s('%s')", id_name.c_str(), name);
     switch (request.id) {

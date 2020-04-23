@@ -48,7 +48,7 @@ static AdbdAuthContext* auth_ctx;
 static void adb_disconnected(void* unused, atransport* t);
 static struct adisconnect adb_disconnect = {adb_disconnected, nullptr};
 
-static android::base::NoDestructor<std::map<uint32_t, weak_ptr<atransport>>> transports;
+static android::base::NoDestructor<std::map<uint32_t, ::weak_ptr<atransport>>> transports;
 static uint32_t transport_auth_id = 0;
 
 bool auth_required = true;
@@ -137,12 +137,14 @@ static bool adbd_auth_generate_token(void* token, size_t token_size) {
 }
 
 void adbd_cloexec_auth_socket() {
+#if !ADB_NON_ANDROID
     int fd = android_get_control_socket("adbd");
     if (fd == -1) {
         PLOG(ERROR) << "Failed to get adbd socket";
         return;
     }
     fcntl(fd, F_SETFD, FD_CLOEXEC);
+#endif
 }
 
 static void adbd_auth_key_authorized(void* arg, uint64_t id) {

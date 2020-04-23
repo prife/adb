@@ -56,7 +56,9 @@
 #include "transport.h"
 
 #if !ADB_HOST
+#if !ADB_NON_ANDROID
 #include <sys/capability.h>
+#endif
 #include <sys/mount.h>
 #include <android-base/properties.h>
 using namespace std::chrono_literals;

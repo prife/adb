@@ -75,7 +75,9 @@ public:
             PLOG(FATAL) << "failed to create eventfd";
         }
 
+#if !ADB_NON_ANDROID
         sock_fd_.reset(android_get_control_socket("adbd"));
+#endif
         if (sock_fd_ == -1) {
             PLOG(ERROR) << "failed to get adbd authentication socket";
         } else {

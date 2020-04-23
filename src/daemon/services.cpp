@@ -238,9 +238,11 @@ struct SourceSocket : public ServiceSocket {
 
 asocket* daemon_service_to_socket(std::string_view name) {
     if (name == "jdwp") {
+#if !ADB_NON_ANDROID
         return create_jdwp_service_socket();
     } else if (name == "track-jdwp") {
         return create_jdwp_tracker_service_socket();
+#endif
     } else if (android::base::ConsumePrefix(&name, "sink:")) {
         uint64_t byte_count = 0;
         if (!ParseUint(&byte_count, name)) {
@@ -307,12 +309,14 @@ unique_fd daemon_service_to_fd(std::string_view name, atransport* transport) {
 
     if (android::base::ConsumePrefix(&name, "dev:")) {
         return unique_fd{unix_open(name, O_RDWR | O_CLOEXEC)};
+#if !ADB_NON_ANDROID
     } else if (android::base::ConsumePrefix(&name, "jdwp:")) {
         pid_t pid;
         if (!ParseUint(&pid, name)) {
             return unique_fd{};
         }
         return create_jdwp_connection_fd(pid);
+#endif
     } else if (android::base::ConsumePrefix(&name, "shell")) {
         return ShellService(name, transport);
     } else if (android::base::ConsumePrefix(&name, "exec:")) {

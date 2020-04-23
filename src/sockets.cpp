@@ -35,7 +35,13 @@
 
 #if !ADB_HOST
 #include <android-base/properties.h>
+#if !ADB_NON_ANDROID
 #include <log/log_properties.h>
+#else
+static int __android_log_is_debuggable() {
+    return 0;
+}
+#endif
 #endif
 
 #include "adb.h"
