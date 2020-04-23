@@ -1,0 +1,13 @@
+LIBADBD_AUTH {
+  global:
+    adbd_auth_new; # apex
+    adbd_auth_delete; # apex
+    adbd_auth_run; # apex
+    adbd_auth_get_public_keys; #apex
+    adbd_auth_notify_auth; # apex
+    adbd_auth_notify_disconnect; # apex
+    adbd_auth_prompt_user; # apex
+    adbd_auth_supports_feature; # apex
+  local:
+    *;
+};
