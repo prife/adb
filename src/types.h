@@ -330,13 +330,13 @@ struct enable_weak_from_this {
         }
     }
 
-    weak_ptr<T> weak() { return weak_ptr<T>(static_cast<T*>(this)); }
+    ::weak_ptr<T> weak() { return ::weak_ptr<T>(static_cast<T*>(this)); }
 
     void schedule_deletion() {
         fdevent_run_on_main_thread([this]() { delete this; });
     }
 
   private:
-    friend struct weak_ptr<T>;
-    std::vector<weak_ptr<T>*> weak_ptrs_;
+    friend struct ::weak_ptr<T>;
+    std::vector<::weak_ptr<T>*> weak_ptrs_;
 };

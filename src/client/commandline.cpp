@@ -59,7 +59,9 @@
 #include "bugreport.h"
 #include "client/file_sync_client.h"
 #include "commandline.h"
+#ifndef DONT_USE_LIBUSB
 #include "fastdeploy.h"
+#endif
 #include "services.h"
 #include "shell_protocol.h"
 #include "sysdeps/chrono.h"

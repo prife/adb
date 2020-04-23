@@ -21,7 +21,7 @@
 #include <inttypes.h>
 #include <poll.h>
 #include <stdarg.h>
-#include <stdatomic.h>
+//#include <stdatomic.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -43,6 +43,27 @@
 
 static int logd_socket;
 static RwLock logd_socket_lock;
+
+#if defined(__linux__) && !defined(__ANDROID__)
+#include <syscall.h>
+#include <unistd.h>
+#elif defined(_WIN32)
+#include <windows.h>
+#endif
+
+#ifndef __ANDROID__
+pid_t gettid() {
+#if defined(__APPLE__)
+  uint64_t tid;
+  pthread_threadid_np(NULL, &tid);
+  return tid;
+#elif defined(__linux__)
+  return syscall(__NR_gettid);
+#elif defined(_WIN32)
+  return GetCurrentThreadId();
+#endif
+}
+#endif
 
 static void OpenSocketLocked() {
   logd_socket = TEMP_FAILURE_RETRY(socket(PF_UNIX, SOCK_DGRAM | SOCK_CLOEXEC | SOCK_NONBLOCK, 0));

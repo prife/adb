@@ -20,4 +20,5 @@ add_library(${PROJECT_NAME} STATIC
     logger_write.cpp
     logprint.cpp
     logd_writer.cpp
-    log_event_write.cpp)
+    log_event_write.cpp
+    properties.cpp)

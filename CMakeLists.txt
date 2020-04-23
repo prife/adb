@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 3.5.1)
 
 set(CMAKE_C_COMPILER /usr/bin/clang)
 set(CMAKE_CXX_COMPILER /usr/bin/clang++)
+set(CMAKE_CXX_FLAGS "${CMAKE_C_FLAGS} -stdlib=libc++")
 
 project(n-adb)
 

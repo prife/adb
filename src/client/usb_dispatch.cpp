@@ -74,8 +74,12 @@ int usb_close(usb_handle* h) {
 }
 
 void usb_reset(usb_handle* h) {
+#ifndef DONT_USE_LIBUSB
     should_use_libusb() ? libusb::usb_reset(reinterpret_cast<libusb::usb_handle*>(h))
                         : native::usb_reset(reinterpret_cast<native::usb_handle*>(h));
+#else
+    return native::usb_reset(reinterpret_cast<native::usb_handle*>(h));
+#endif
 }
 
 void usb_kick(usb_handle* h) {

@@ -145,4 +145,11 @@ $ cmake ..
 $ make -j8
 ```
 
+## build with clang and libc++ 
+
+```bash
+sudo apt-get install libc++abi-9-dev libc++-9-dev libc++1-9 libc++abi1-9
+```
+
 ## Troubleshooting
+

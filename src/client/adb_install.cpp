@@ -35,7 +35,10 @@
 #include "adb_utils.h"
 #include "client/file_sync_client.h"
 #include "commandline.h"
+
+#ifndef DONT_USE_FASTDEPLOY
 #include "fastdeploy.h"
+#endif
 
 static constexpr int kFastDeployMinApi = 24;
 
@@ -166,6 +169,7 @@ static int install_app_streamed(int argc, const char** argv, bool use_fastdeploy
         error_exit("--fastdeploy doesn't support .apex files");
     }
 
+#ifndef DONT_USE_FASTDEPLOY
     if (use_fastdeploy) {
         auto metadata = extract_metadata(file);
         if (metadata.has_value()) {
@@ -176,6 +180,7 @@ static int install_app_streamed(int argc, const char** argv, bool use_fastdeploy
             return stream_patch(file, std::move(metadata.value()), std::move(patchFd));
         }
     }
+#endif
 
     struct stat sb;
     if (stat(file, &sb) == -1) {
@@ -266,6 +271,7 @@ static int install_app_legacy(int argc, const char** argv, bool use_fastdeploy) 
     std::string apk_dest = "/data/local/tmp/" + android::base::Basename(argv[last_apk]);
     argv[last_apk] = apk_dest.c_str(); /* destination name, not source location */
 
+#ifndef DONT_USE_FASTDEPLOY
     if (use_fastdeploy) {
         auto metadata = extract_metadata(apk_file[0]);
         if (metadata.has_value()) {
@@ -278,6 +284,7 @@ static int install_app_legacy(int argc, const char** argv, bool use_fastdeploy) 
             return status;
         }
     }
+#endif
 
     if (do_sync_push(apk_file, apk_dest.c_str(), false)) {
         result = pm_command(argc, argv);
@@ -292,7 +299,9 @@ int install_app(int argc, const char** argv) {
     InstallMode installMode = INSTALL_DEFAULT;
     bool use_fastdeploy = false;
     bool is_reinstall = false;
+#ifndef DONT_USE_FASTDEPLOY
     FastDeploy_AgentUpdateStrategy agent_update_strategy = FastDeploy_AgentUpdateDifferentVersion;
+#endif
 
     for (int i = 1; i < argc; i++) {
         if (!strcmp(argv[i], "--streaming")) {
@@ -305,6 +314,7 @@ int install_app(int argc, const char** argv) {
             // Note that this argument is not added to processedArgIndicies because it
             // must be passed through to pm
             is_reinstall = true;
+#ifndef DONT_USE_FASTDEPLOY
         } else if (!strcmp(argv[i], "--fastdeploy")) {
             processedArgIndicies.push_back(i);
             use_fastdeploy = true;
@@ -320,6 +330,7 @@ int install_app(int argc, const char** argv) {
         } else if (!strcmp(argv[i], "--version-check-agent")) {
             processedArgIndicies.push_back(i);
             agent_update_strategy = FastDeploy_AgentUpdateDifferentVersion;
+#endif
         }
     }
 
@@ -331,6 +342,7 @@ int install_app(int argc, const char** argv) {
         error_exit("Attempting to use streaming install on unsupported device");
     }
 
+#ifndef DONT_USE_FASTDEPLOY
     if (use_fastdeploy && get_device_api_level() < kFastDeployMinApi) {
         printf("Fast Deploy is only compatible with devices of API version %d or higher, "
                "ignoring.\n",
@@ -338,6 +350,7 @@ int install_app(int argc, const char** argv) {
         use_fastdeploy = false;
     }
     fastdeploy_set_agent_update_strategy(agent_update_strategy);
+#endif
 
     std::vector<const char*> passthrough_argv;
     for (int i = 0; i < argc; i++) {

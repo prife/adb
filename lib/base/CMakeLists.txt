@@ -10,6 +10,7 @@ include_directories(${CMAKE_SOURCE_DIR}/lib/base/include)
 set (SOURCES_BASE
         file.cpp
         logging.cpp
+        liblog_symbols.cpp
         parsenetaddress.cpp
         stringprintf.cpp
         strings.cpp
