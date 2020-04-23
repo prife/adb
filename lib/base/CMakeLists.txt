@@ -15,6 +15,7 @@ set (SOURCES_BASE
         stringprintf.cpp
         strings.cpp
         threads.cpp
+        parsebool.cpp
         test_utils.cpp
     )
 
