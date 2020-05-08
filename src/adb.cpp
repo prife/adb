@@ -64,14 +64,28 @@
 using namespace std::chrono_literals;
 #endif
 
+#if !ADB_NON_ANDROID
+extern "C" {
+    extern const char* GIT_BRANCH;
+    extern const char* GIT_REV;
+    extern const char* GIT_TAG;
+}
+#endif
+
 std::string adb_version() {
     // Don't change the format of this --- it's parsed by ddmlib.
     return android::base::StringPrintf(
         "Android Debug Bridge version %d.%d.%d\n"
         "Version %s-%s\n"
+#if !ADB_NON_ANDROID
+        "Wetest branch:%s rev:%s tag:%s\n"
+#endif
         "Installed as %s\n",
         ADB_VERSION_MAJOR, ADB_VERSION_MINOR, ADB_SERVER_VERSION,
         PLATFORM_TOOLS_VERSION, android::build::GetBuildNumber().c_str(),
+#if !ADB_NON_ANDROID
+        GIT_BRANCH, GIT_REV, GIT_TAG,
+#endif
         android::base::GetExecutablePath().c_str());
 }
 

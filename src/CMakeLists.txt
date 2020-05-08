@@ -1,9 +1,20 @@
 cmake_minimum_required(VERSION 3.5.1)
-project(my-adb)
+project(adb)
+
+# Add a custom command that produces version.cpp, plus
+# a dummy output that's not actually produced, in order
+# to force version.cmake to always be re-run before the build
+ADD_CUSTOM_COMMAND(
+    OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/version.cpp
+           ${CMAKE_CURRENT_BINARY_DIR}/_version.cpp
+    COMMAND ${CMAKE_COMMAND} -P
+            ${CMAKE_CURRENT_SOURCE_DIR}/version.cmake)
+set(version_src ${CMAKE_CURRENT_BINARY_DIR}/version.cpp)
 
 set(CMAKE_CXX_STANDARD 17)
 
 set(libadb_srcs
+    ${version_src}
     adb.cpp
     adb_io.cpp
     adb_listeners.cpp
