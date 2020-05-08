@@ -43,7 +43,7 @@ std::string GetBuildNumber() {
 #else
 
 extern "C" {
-  char soong_build_number[128] = "SOONG BUILD NUMBER PLACEHOLDER";
+  char soong_build_number[128] = "6198805";
 }
 
 std::string GetBuildNumber() {
