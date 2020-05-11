@@ -46,7 +46,7 @@ $ make CFLAGS=-fPIC CC=aarch64-linux-gnu-gcc DEB_HOST_ARCH=arm64 -f debian/libcr
 $ make CXXFLAGS=-fPIC CXX=aarch64-linux-gnu-g++ DEB_HOST_ARCH=arm64 -f debian/libssl.mk
 ```
 
-### build adb for linxu x86-64
+### build adb for linux x86-64
 
 **build on command line**
 
@@ -60,13 +60,23 @@ $ make -j8
 
 you need an remote linux pc, then config clion/vscode with it's remote development feature, it is so easy!
 
-## build adb target for linux aarch64
+### build adb target for linux aarch64
+
+**first, install toolchain**
 
 ```bash
-$ mkdir build && cd build
-$ cmake -DCMAKE_TOOLCHAIN_FILE=../aarch64_linux_toolchain.cmake ../
-$ make -j8
+$ wget 'https://developer.arm.com/-/media/Files/downloads/gnu-a/9.2-2019.12/binrel/gcc-arm-9.2-2019.12-x86_64-aarch64-none-linux-gnu.tar.xz\?revision\=61c3be5d-5175-4db6-9030-b565aae9f766\&la\=en\&hash\=0A37024B42028A9616F56A51C2D20755C5EBBCD7' -O gcc-arm-9.2-2019.12-x86_64-aarch64-none-linux-gnu.tar.xz
+$ tar xvf gcc-arm-9.2-2019.12-x86_64-aarch64-none-linux-gnu.tar.xz --strip-components=1
 ```
+
+**build with cmake**
+
+```
+$ CC=clang CXX=clang++ cmake . -Bbuild-arm64 -DCMAKE_TOOLCHAIN_FILE=cmake/linux/toolchain-aarch64.cmake
+$ cmake --build build-arm64 --config Release
+```
+
+NOTE: please install a cmake with the newest version!
 
 ## build adb target for windows(only 32-bit supported!)
 

@@ -1,11 +1,11 @@
 cmake_minimum_required(VERSION 3.5.1)
 
+project(n-adb)
+
 if ((CMAKE_HOST_SYSTEM_NAME MATCHES "Linux") AND (NOT (${CMAKE_SYSTEM_PROCESSOR} MATCHES "aarch64")))
 set(CMAKE_C_COMPILER /usr/bin/clang)
 set(CMAKE_CXX_COMPILER /usr/bin/clang++)
 endif()
-
-project(n-adb)
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 add_compile_options(-g)
