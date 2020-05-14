@@ -164,6 +164,7 @@ elseif(CMAKE_HOST_SYSTEM_NAME MATCHES "Linux")
     set_target_properties(${PROJECT_NAME} PROPERTIES
                         LINK_FLAGS "-Wl,-rpath=/opt/lib/android/"
                         BUILD_WITH_INSTALL_RPATH 1)
+    target_link_options(${PROJECT_NAME} PRIVATE -static-libgcc -static-libstdc++)
 elseif(CMAKE_HOST_SYSTEM_NAME MATCHES "Darwin")
     FIND_LIBRARY(IOKit_LIBRARY IOKit)
     FIND_LIBRARY(Foundation_LIBRARY Foundation)
