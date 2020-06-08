@@ -48,6 +48,16 @@ $ make CXXFLAGS=-fPIC CXX=aarch64-linux-gnu-g++ DEB_HOST_ARCH=arm64 -f debian/li
 
 ### build adb for linux x86-64
 
+First, install gcc-9 which provider c++20 header files and libs for clang
+
+```
+sudo add-apt-repository ppa:ubuntu-toolchain-r/test
+sudo apt update
+sudo apt install gcc-9
+```
+
+ref: https://askubuntu.com/questions/1140183/install-gcc-9-on-ubuntu-18-04
+
 **build on command line**
 
 ```bash
