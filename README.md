@@ -62,11 +62,19 @@ you need an remote linux pc, then config clion/vscode with it's remote developme
 
 ### build adb target for linux aarch64
 
+NOTE: please install a cmake with the newest version and `lld` !
+
+```
+sudo apt-get install -y lld
+```
+
 **first, install toolchain**
 
 ```bash
+$ cd cmake/toolchain/linux-aarch64
 $ wget 'https://developer.arm.com/-/media/Files/downloads/gnu-a/9.2-2019.12/binrel/gcc-arm-9.2-2019.12-x86_64-aarch64-none-linux-gnu.tar.xz\?revision\=61c3be5d-5175-4db6-9030-b565aae9f766\&la\=en\&hash\=0A37024B42028A9616F56A51C2D20755C5EBBCD7' -O gcc-arm-9.2-2019.12-x86_64-aarch64-none-linux-gnu.tar.xz
 $ tar xvf gcc-arm-9.2-2019.12-x86_64-aarch64-none-linux-gnu.tar.xz --strip-components=1
+$ cd -
 ```
 
 **build with cmake**
@@ -76,7 +84,7 @@ $ CC=clang CXX=clang++ cmake . -Bbuild-arm64 -DCMAKE_TOOLCHAIN_FILE=cmake/linux/
 $ cmake --build build-arm64 --config Release
 ```
 
-NOTE: please install a cmake with the newest version!
+ref: https://clickhouse.tech/docs/en/development/build-cross-arm/
 
 ## build adb target for windows(only 32-bit supported!)
 
