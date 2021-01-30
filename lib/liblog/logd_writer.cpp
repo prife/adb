@@ -65,6 +65,17 @@ pid_t gettid() {
 }
 #endif
 
+#if defined(__APPLE__)
+#include <android-base/macros.h>
+#ifndef SOCK_CLOEXEC
+#define SOCK_CLOEXEC 0
+#endif
+
+#ifndef SOCK_NONBLOCK
+#define SOCK_NONBLOCK 0
+#endif
+#endif
+
 static void OpenSocketLocked() {
   logd_socket = TEMP_FAILURE_RETRY(socket(PF_UNIX, SOCK_DGRAM | SOCK_CLOEXEC | SOCK_NONBLOCK, 0));
   if (logd_socket <= 0) {
