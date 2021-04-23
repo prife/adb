@@ -32,6 +32,7 @@
 #include <utility>
 #include <variant>
 #include <vector>
+#include <atomic>
 
 #include <android-base/file.h>
 #include <android-base/logging.h>
