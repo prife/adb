@@ -19,6 +19,8 @@ git clone this project.
 $ cd <this-project>
 $ cd lib
 $ git clone https://salsa.debian.org/android-tools-team/android-platform-external-boringssl.git boringssl
+$ cd boringssl
+$ git checkout debian/8.1.0+r23-3
 ```
 
 ### step2: build boringssl
