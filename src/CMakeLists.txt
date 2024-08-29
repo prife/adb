@@ -11,7 +11,7 @@ ADD_CUSTOM_COMMAND(
             ${CMAKE_CURRENT_SOURCE_DIR}/version.cmake)
 set(version_src ${CMAKE_CURRENT_BINARY_DIR}/version.cpp)
 
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 14)
 
 set(libadb_srcs
     ${version_src}
