@@ -1619,7 +1619,7 @@ int adb_commandline(int argc, const char** argv) {
 
         std::string query = android::base::StringPrintf("host:%s%s", argv[0], listopt);
         std::string error;
-        if (!adb_check_server_version(&error)) {
+        if (!adb_check_server_version(&error, false)) {
             error_exit("failed to check server version: %s", error.c_str());
         }
         printf("List of devices attached\n");

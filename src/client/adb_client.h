@@ -27,7 +27,7 @@
 // Explicitly check the adb server version.
 // All of the commands below do this implicitly.
 // Only the first invocation of this function will check the server version.
-bool adb_check_server_version(std::string* _Nonnull error);
+bool adb_check_server_version(std::string* _Nonnull error, bool start_server);
 
 // Connect to adb, connect to the named service, and return a valid fd for
 // interacting with that service upon success or a negative number on failure.

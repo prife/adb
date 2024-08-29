@@ -229,7 +229,7 @@ std::optional<std::string> adb_get_server_executable_path() {
 }
 #endif
 
-static bool __adb_check_server_version(std::string* error) {
+static bool __adb_check_server_version(std::string* error, bool start_server) {
     unique_fd fd(_adb_connect("host:version", nullptr, error));
 
     bool local = is_local_socket_spec(__adb_server_socket_spec);
@@ -239,6 +239,13 @@ static bool __adb_check_server_version(std::string* error) {
         return false;
     } else if (fd == -2) {
         fprintf(stderr, "* daemon not running; starting now at %s\n", __adb_server_socket_spec);
+#if 1 //DISABLE_AUTO_LAUNCH
+        // The adb server should only started with 'adb start-server' in systemd
+        if (!start_server) {
+            *error = "daemon not running!";
+            return -1;
+        }
+#endif
     start_server:
         if (launch_server(__adb_server_socket_spec)) {
             fprintf(stderr, "* failed to start daemon\n");
@@ -311,14 +318,14 @@ static bool __adb_check_server_version(std::string* error) {
     return true;
 }
 
-bool adb_check_server_version(std::string* error) {
+bool adb_check_server_version(std::string* error, bool start_server) {
     // Only check the version once per process, since this isn't atomic anyway.
     static std::once_flag once;
     static bool result;
     static std::string* err;
-    std::call_once(once, []() {
+    std::call_once(once, [start_server]() {
         err = new std::string();
-        result = __adb_check_server_version(err);
+        result = __adb_check_server_version(err, start_server);
     });
     *error = *err;
     return result;
@@ -329,7 +336,7 @@ int adb_connect(TransportId* transport, std::string_view service, std::string* e
     LOG(DEBUG) << "adb_connect: service: " << service;
 
     // Query the adb server's version.
-    if (!adb_check_server_version(error)) {
+    if (!adb_check_server_version(error, service == "host:start-server")) {
         return -1;
     }
 
