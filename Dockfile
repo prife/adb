@@ -1,0 +1,10 @@
+# build
+FROM ubuntu:20.04
+LABEL maintainer=prife
+
+RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends ca-certificates lld wget clang git g++ autoconf automake libtool xz-utils libssl-dev cmake make pkg-config patch lsb-release sudo \
+    && apt-get clean && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /data
+
+CMD echo $PATH
